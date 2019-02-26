@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_lifts/exercise.dart';
+import 'package:my_lifts/models/exercise.dart';
 
 class CreateDaysView extends StatefulWidget {
   final List<Exercise> exercises;
