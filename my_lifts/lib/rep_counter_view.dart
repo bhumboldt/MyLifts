@@ -15,8 +15,8 @@ class RepCounterView extends StatefulWidget {
 class RepCounterState extends State<RepCounterView> {
   final _repsTextController = TextEditingController();
   final _weightTextController = TextEditingController();
-  final _weightFocusNode =FocusNode();
-  final _repsFocusNode =FocusNode();
+  final _weightFocusNode = FocusNode();
+  final _repsFocusNode = FocusNode();
   final List<ExerciseSet> sets = List<ExerciseSet>();
 
   @override
@@ -95,39 +95,39 @@ class RepCounterState extends State<RepCounterView> {
 
   Widget _buildAddSetButton() {
     return Padding(
-        padding: const EdgeInsets.only(top: 8.0),
-        child: RaisedButton(
-          color: Theme.of(context).accentColor,
-          child: Text(
-            'ADD SET',
-            style: TextStyle(color: Colors.white),
-          ),
-          onPressed: () {
-            int reps = 0;
-            int weight = 0;
-            if (_repsTextController.text.isNotEmpty &&
-                _repsTextController.text != null) {
-              reps = int.tryParse(_repsTextController.text);
-            }
-
-            if (_weightTextController.text.isNotEmpty &&
-                _weightTextController.text != null) {
-              weight = int.tryParse(_weightTextController.text);
-            }
-
-            if (reps != 0 && weight != 0) {
-              setState(() {
-                sets.add(ExerciseSet(
-                    exerciseId: widget.exercise.id,
-                    reps: reps,
-                    weight: weight));
-                _repsTextController.text = '';
-                _weightTextController.text = '';
-              });
-            }
-          },
+      padding: const EdgeInsets.only(top: 8.0),
+      child: RaisedButton(
+        color: Theme.of(context).accentColor,
+        child: Text(
+          'ADD SET',
+          style: TextStyle(color: Colors.white),
         ),
-      );
+        onPressed: () => _submitSet(),
+      ),
+    );
+  }
+
+  void _submitSet() {
+    int reps = 0;
+    int weight = 0;
+    if (_repsTextController.text.isNotEmpty &&
+        _repsTextController.text != null) {
+      reps = int.tryParse(_repsTextController.text);
+    }
+
+    if (_weightTextController.text.isNotEmpty &&
+        _weightTextController.text != null) {
+      weight = int.tryParse(_weightTextController.text);
+    }
+
+    if (reps != 0 && weight != 0) {
+      setState(() {
+        sets.add(ExerciseSet(
+            exerciseId: widget.exercise.id, reps: reps, weight: weight));
+        _repsTextController.text = '';
+        _weightTextController.text = '';
+      });
+    }
   }
 
   Widget _buildRepWeightForm() {
@@ -163,6 +163,9 @@ class RepCounterState extends State<RepCounterView> {
               maxLength: 4,
               keyboardType: TextInputType.number,
               focusNode: _weightFocusNode,
+              onSubmitted: (text) {
+                _submitSet();
+              },
             ),
           ),
         ),

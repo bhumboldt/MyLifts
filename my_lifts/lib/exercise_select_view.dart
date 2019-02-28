@@ -3,13 +3,11 @@ import 'package:my_lifts/models/exercise.dart';
 import 'package:my_lifts/home_view.dart';
 
 class ExerciseSelectView extends StatefulWidget {
-  Set<Exercise> selectedExercises;
+  final Set<Exercise> selectedExercises = Set<Exercise>();
 
   ExerciseSelectView([List<Exercise> selectedExercises]) {
     if (selectedExercises != null && selectedExercises.length > 0) {
-      this.selectedExercises = Set.of(selectedExercises);
-    } else {
-      this.selectedExercises = Set<Exercise>();
+      this.selectedExercises.addAll(selectedExercises);
     }
   }
 
