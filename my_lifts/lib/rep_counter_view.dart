@@ -15,6 +15,8 @@ class RepCounterView extends StatefulWidget {
 class RepCounterState extends State<RepCounterView> {
   final _repsTextController = TextEditingController();
   final _weightTextController = TextEditingController();
+  final _weightFocusNode =FocusNode();
+  final _repsFocusNode =FocusNode();
   final List<ExerciseSet> sets = List<ExerciseSet>();
 
   @override
@@ -136,20 +138,31 @@ class RepCounterState extends State<RepCounterView> {
             padding: const EdgeInsets.only(left: 8.0),
             child: TextField(
               controller: _repsTextController,
-              decoration: InputDecoration(labelText: 'Reps'),
+              decoration: InputDecoration(hintText: 'Reps'),
               maxLength: 3,
               keyboardType: TextInputType.number,
+              focusNode: _repsFocusNode,
+              textInputAction: TextInputAction.next,
+              onSubmitted: (text) {
+                _repsFocusNode.unfocus();
+                FocusScope.of(context).requestFocus(_weightFocusNode);
+              },
             ),
           ),
         ),
+        const Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Text('@'),
+        ),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+            padding: const EdgeInsets.only(right: 8.0),
             child: TextField(
               controller: _weightTextController,
-              decoration: InputDecoration(labelText: 'Weight'),
+              decoration: InputDecoration(hintText: 'Weight'),
               maxLength: 4,
               keyboardType: TextInputType.number,
+              focusNode: _weightFocusNode,
             ),
           ),
         ),
