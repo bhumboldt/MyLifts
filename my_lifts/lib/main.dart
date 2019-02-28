@@ -11,7 +11,8 @@ class MyApp extends StatelessWidget {
       title: 'My Lifts',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.red,
+        accentColor: Colors.redAccent,
       ),
       home: ExerciseSelectView(),
     );

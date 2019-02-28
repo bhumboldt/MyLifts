@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_lifts/models/exercise.dart';
 import 'package:my_lifts/models/exercise_set.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 class RepCounterView extends StatefulWidget {
   final Exercise exercise;
@@ -18,19 +19,76 @@ class RepCounterState extends State<RepCounterView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.exercise.name),
-      ),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(children: [
-          _buildRepWeightForm(),
-          _buildAddSetButton(),
-          _buildSetList()
-        ]),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.exercise.name),
+          bottom: TabBar(
+            tabs: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text('Lift'),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text('Chart'),
+              ),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: <Widget>[
+            SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                children: [
+                  _buildRepWeightForm(),
+                  _buildAddSetButton(),
+                  _buildSetList()
+                ],
+              ),
+            ),
+            _buildChart()
+          ],
+        ),
       ),
     );
+  }
+
+  Widget _buildChart() {
+    return Container(
+      width: 250,
+      height: 250,
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: charts.TimeSeriesChart(
+          _createData(),
+          animate: true,
+          defaultInteractions: true,
+        ),
+      ),
+    );
+  }
+
+  List<charts.Series<ChartSet, DateTime>> _createData() {
+    final data = [
+      ChartSet(maxWeight: 100, time: DateTime(2019, 2, 26)),
+      ChartSet(maxWeight: 120, time: DateTime(2019, 2, 27)),
+      ChartSet(maxWeight: 135, time: DateTime(2019, 3, 3)),
+      ChartSet(maxWeight: 110, time: DateTime(2019, 3, 9)),
+      ChartSet(maxWeight: 100, time: DateTime(2019, 4, 10)),
+      ChartSet(maxWeight: 100, time: DateTime(2019, 4, 17))
+    ];
+
+    return [
+      charts.Series<ChartSet, DateTime>(
+          data: data,
+          id: 'Max Weight',
+          colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
+          domainFn: (chartSet, _) => chartSet.time,
+          measureFn: (chartSet, _) => chartSet.maxWeight)
+    ];
   }
 
   Widget _buildAddSetButton() {
@@ -131,4 +189,11 @@ class RepCounterState extends State<RepCounterView> {
       ),
     );
   }
+}
+
+class ChartSet {
+  final DateTime time;
+  final int maxWeight;
+
+  const ChartSet({this.time, this.maxWeight});
 }
