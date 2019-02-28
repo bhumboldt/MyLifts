@@ -191,8 +191,7 @@ class RepCounterState extends State<RepCounterView> {
               itemBuilder: (context, index) {
                 final exerciseSet = sets[index];
                 return ListTile(
-                  title: Text(
-                      'Set ${index + 1}: ${exerciseSet.reps} Reps @ ${exerciseSet.weight} lbs.'),
+                  title: Text('Set ${index + 1}: ${exerciseSet.reps} Reps @ ${exerciseSet.weight} lbs.'),
                 );
               },
               itemCount: sets.length,

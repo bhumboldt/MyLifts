@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:my_lifts/models/exercise.dart';
 import 'package:my_lifts/home_view.dart';
+import 'package:my_lifts/services/exercise_service.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
 
 class ExerciseSelectView extends StatefulWidget {
   final Set<Exercise> selectedExercises = Set<Exercise>();
@@ -16,17 +20,20 @@ class ExerciseSelectView extends StatefulWidget {
 }
 
 class ExerciseSelectState extends State<ExerciseSelectView> {
-  final _exercises = <Exercise>[
-    Exercise(exerciseGroup: 'Arms', name: 'Curls', id: 0),
-    Exercise(exerciseGroup: 'Legs', name: 'Squats', id: 1),
-    Exercise(exerciseGroup: 'Legs', name: 'Deadlift', id: 2),
-    Exercise(exerciseGroup: 'Chest', name: 'Bench Press', id: 3)
-  ];
+  ExerciseService _exerciseService;
+
+  List<Exercise> _exercises = <Exercise>[];
   final Set<Exercise> _selectedExercises =Set<Exercise>();
+
+  ExerciseSelectState() {
+    _exerciseService =kiwi.Container().resolve<ExerciseService>();
+  }
   
   @override
   void initState() {
     super.initState();
+
+    getExercises();
 
     if (widget.selectedExercises.length > 0) {
       for (var selectedExercise in widget.selectedExercises) {
@@ -37,6 +44,14 @@ class ExerciseSelectState extends State<ExerciseSelectView> {
         }
       }
     }
+  }
+
+  Future<void> getExercises() async {
+    var exercises = await _exerciseService.getExercises();
+    setState(() {
+     _exercises =exercises.toList(); 
+    });
+    print(exercises.length);
   }
 
   @override
