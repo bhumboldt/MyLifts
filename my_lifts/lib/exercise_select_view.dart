@@ -49,14 +49,14 @@ class ExerciseSelectState extends State<ExerciseSelectView> {
       ),
       body: Column(
         children: <Widget>[
-          Container(
-            height: MediaQuery.of(context).size.height - 200,
+          Expanded(
             child: _buildExerciseList(),
+            flex: 2,
           ),
           Padding(
             padding: const EdgeInsets.only(top: 16.0),
             child: RaisedButton(
-              child: Text(
+              child: const Text(
                 'DONE',
                 style: TextStyle(color: Colors.white),
               ),
@@ -100,7 +100,7 @@ class ExerciseSelectState extends State<ExerciseSelectView> {
                   Icons.check,
                   color: Colors.green,
                 )
-              : null,
+              : Icon(Icons.add),
         );
       }).toList(),
     );
