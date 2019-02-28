@@ -92,9 +92,7 @@ class RepCounterState extends State<RepCounterView> {
   }
 
   Widget _buildAddSetButton() {
-    return Container(
-      width: 100,
-      child: Padding(
+    return Padding(
         padding: const EdgeInsets.only(top: 8.0),
         child: RaisedButton(
           color: Theme.of(context).accentColor,
@@ -127,8 +125,7 @@ class RepCounterState extends State<RepCounterView> {
             }
           },
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildRepWeightForm() {
@@ -137,7 +134,7 @@ class RepCounterState extends State<RepCounterView> {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0),
-            child: TextFormField(
+            child: TextField(
               controller: _repsTextController,
               decoration: InputDecoration(labelText: 'Reps'),
               maxLength: 3,
@@ -148,7 +145,7 @@ class RepCounterState extends State<RepCounterView> {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-            child: TextFormField(
+            child: TextField(
               controller: _weightTextController,
               decoration: InputDecoration(labelText: 'Weight'),
               maxLength: 4,
@@ -165,13 +162,13 @@ class RepCounterState extends State<RepCounterView> {
       padding: const EdgeInsets.only(top: 16.0),
       child: Column(
         children: <Widget>[
-          Center(
+          const Center(
             child: Text(
               'Sets',
               style: TextStyle(fontSize: 24.0),
             ),
           ),
-          Divider(),
+          const Divider(),
           Container(
             height: 300.0,
             child: ListView.builder(
