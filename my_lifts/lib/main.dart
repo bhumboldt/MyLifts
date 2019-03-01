@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
 import 'package:my_lifts/home_view.dart';
 import 'package:my_lifts/services/exercise_service.dart';
+import 'package:my_lifts/services/exercise_set_service.dart';
 import 'package:my_lifts/services/local_database_service.dart';
 
 void main() async {
@@ -9,6 +10,7 @@ void main() async {
   await localDatabaseService.init();
   kiwi.Container().registerSingleton((c) => localDatabaseService);
   kiwi.Container().registerSingleton((c) => ExerciseService(c.resolve<LocalDatabaseService>()));
+  kiwi.Container().registerSingleton((c) => ExerciseSetService(c.resolve<LocalDatabaseService>()));
 
   runApp(MyApp());
 }

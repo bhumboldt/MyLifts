@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:my_lifts/models/exercise.dart';
 import 'package:my_lifts/models/exercise_set.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:my_lifts/services/exercise_set_service.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
 
 class RepCounterView extends StatefulWidget {
   final Exercise exercise;
@@ -17,7 +22,21 @@ class RepCounterState extends State<RepCounterView> {
   final _weightTextController = TextEditingController();
   final _weightFocusNode = FocusNode();
   final _repsFocusNode = FocusNode();
-  final List<ExerciseSet> sets = List<ExerciseSet>();
+  
+  List<ExerciseSet> _sets = List<ExerciseSet>();
+
+  ExerciseSetService _exerciseSetService;
+
+  RepCounterState() {
+    _exerciseSetService = kiwi.Container().resolve<ExerciseSetService>();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _retrieveExerciseSets();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +75,13 @@ class RepCounterState extends State<RepCounterView> {
         ),
       ),
     );
+  }
+
+  Future<void> _retrieveExerciseSets() async {
+    var completedSets = await _exerciseSetService.getExerciseSetsForExerciseOnDate(widget.exercise.id, DateFormat.yMd().format(DateTime.now()));
+    setState(() {
+     _sets =completedSets;
+    });
   }
 
   Widget _buildChart() {
@@ -107,7 +133,7 @@ class RepCounterState extends State<RepCounterView> {
     );
   }
 
-  void _submitSet() {
+  Future<void> _submitSet() async {
     int reps = 0;
     int weight = 0;
     if (_repsTextController.text.isNotEmpty &&
@@ -121,9 +147,15 @@ class RepCounterState extends State<RepCounterView> {
     }
 
     if (reps != 0 && weight != 0) {
+      var datetimeNow =DateTime.now();
+      var dateString = DateFormat.yMd().format(datetimeNow);
+      var timeString =DateFormat.Hm().format(datetimeNow);
+      var exerciseSet =ExerciseSet(exerciseId: widget.exercise.id, reps: reps, weight: weight, timestamp: timeString, dateCompleted: dateString);
+      var exerciseSetId = await _exerciseSetService.createExerciseSet(exerciseSet);
+      exerciseSet.id =exerciseSetId;
+
       setState(() {
-        sets.add(ExerciseSet(
-            exerciseId: widget.exercise.id, reps: reps, weight: weight));
+        _sets.add(exerciseSet);
         _repsTextController.text = '';
         _weightTextController.text = '';
       });
@@ -189,12 +221,12 @@ class RepCounterState extends State<RepCounterView> {
             height: 300.0,
             child: ListView.builder(
               itemBuilder: (context, index) {
-                final exerciseSet = sets[index];
+                final exerciseSet = _sets[index];
                 return ListTile(
                   title: Text('Set ${index + 1}: ${exerciseSet.reps} Reps @ ${exerciseSet.weight} lbs.'),
                 );
               },
-              itemCount: sets.length,
+              itemCount: _sets.length,
             ),
           )
         ],

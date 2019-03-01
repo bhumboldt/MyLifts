@@ -14,9 +14,14 @@ class LocalDatabaseService {
 
     db = await openDatabase(path, version: 1, onCreate: (database, version) async {
       await database.execute('create table exercise(id int primary key, name text, exercise_group text)');
-      await database.execute('create table userexercise(id int primary key, exercise_id int, foreign key(exercise_id) references exercise(id))');
+      await database.execute('create table userexercise(id integer primary key autoincrement, exercise_id int, foreign key(exercise_id) references exercise(id))');
+      await database.execute('create table exerciseset(id integer primary key autoincrement, exercise_id int, reps int, weight int, timestamp text, date_completed text, foreign key(exercise_id) references exercise(id))');
       await addInitialExercises(database);
     });
+  }
+
+  Future<List<Map<String, dynamic>>> getItemsWithQuery(String query, [List<dynamic> arguments]) {
+    return db.rawQuery(query, arguments);
   }
 
   Future<List<Map<String, dynamic>>> getAllItems(String tableName) {
