@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_lifts/exercise_select_view.dart';
 import 'package:kiwi/kiwi.dart' as kiwi;
+import 'package:my_lifts/home_view.dart';
 import 'package:my_lifts/services/exercise_service.dart';
 import 'package:my_lifts/services/local_database_service.dart';
 
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
         accentColor: Colors.redAccent,
       ),
-      home: ExerciseSelectView()
+      home: HomeView()
     );
   }
 }

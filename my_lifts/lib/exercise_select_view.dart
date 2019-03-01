@@ -34,10 +34,13 @@ class ExerciseSelectState extends State<ExerciseSelectView> {
     super.initState();
 
     getExercises();
+  }
 
+  Future<void> getExercises() async {
+    var exercises = await _exerciseService.getExercises();
     if (widget.selectedExercises.length > 0) {
       for (var selectedExercise in widget.selectedExercises) {
-        for (var exercise in _exercises) {
+        for (var exercise in exercises) {
           if (selectedExercise.id == exercise.id &&
               !_selectedExercises.contains(exercise)) {
             _selectedExercises.add(exercise);
@@ -45,14 +48,10 @@ class ExerciseSelectState extends State<ExerciseSelectView> {
         }
       }
     }
-  }
 
-  Future<void> getExercises() async {
-    var exercises = await _exerciseService.getExercises();
     setState(() {
       _exercises = exercises.toList();
     });
-    print(exercises.length);
   }
 
   @override
