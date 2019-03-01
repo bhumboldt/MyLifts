@@ -24,6 +24,7 @@ class RepCounterState extends State<RepCounterView> {
   final _repsFocusNode = FocusNode();
   
   List<ExerciseSet> _sets = List<ExerciseSet>();
+  List<ChartSet> _chartData = List<ChartSet>();
 
   ExerciseSetService _exerciseSetService;
 
@@ -36,6 +37,7 @@ class RepCounterState extends State<RepCounterView> {
     super.initState();
 
     _retrieveExerciseSets();
+    _retrieveChartData();
   }
 
   @override
@@ -84,6 +86,28 @@ class RepCounterState extends State<RepCounterView> {
     });
   }
 
+  Future<void> _retrieveChartData() async {
+    var allCompletedSets =await _exerciseSetService.getExerciseSetsForExerciseId(widget.exercise.id);
+    Map<String, int> weightMap = Map<String, int>();
+    List<ChartSet> chartData = List<ChartSet>();
+
+    for (var completedSet in allCompletedSets) {
+      if (!weightMap.containsKey(completedSet.dateCompleted)) {
+        weightMap[completedSet.dateCompleted] =completedSet.weight;
+      } else if (weightMap[completedSet.dateCompleted] < completedSet.weight) {
+        weightMap[completedSet.dateCompleted] =completedSet.weight;
+      }
+    }
+
+    for (var key in weightMap.keys) {
+      chartData.add(ChartSet(date: DateFormat().add_yMd().parse(key), maxWeight:weightMap[key]));
+    }
+
+    setState(() {
+     _chartData =chartData;
+    });
+  }
+
   Widget _buildChart() {
     return Container(
       width: 250,
@@ -100,21 +124,12 @@ class RepCounterState extends State<RepCounterView> {
   }
 
   List<charts.Series<ChartSet, DateTime>> _createData() {
-    final data = [
-      ChartSet(maxWeight: 100, time: DateTime(2019, 2, 26)),
-      ChartSet(maxWeight: 120, time: DateTime(2019, 2, 27)),
-      ChartSet(maxWeight: 135, time: DateTime(2019, 3, 3)),
-      ChartSet(maxWeight: 110, time: DateTime(2019, 3, 9)),
-      ChartSet(maxWeight: 100, time: DateTime(2019, 4, 10)),
-      ChartSet(maxWeight: 100, time: DateTime(2019, 4, 17))
-    ];
-
     return [
       charts.Series<ChartSet, DateTime>(
-          data: data,
+          data: _chartData,
           id: 'Max Weight',
           colorFn: (_, __) => charts.MaterialPalette.red.shadeDefault,
-          domainFn: (chartSet, _) => chartSet.time,
+          domainFn: (chartSet, _) => chartSet.date,
           measureFn: (chartSet, _) => chartSet.maxWeight)
     ];
   }
@@ -236,8 +251,8 @@ class RepCounterState extends State<RepCounterView> {
 }
 
 class ChartSet {
-  final DateTime time;
+  final DateTime date;
   final int maxWeight;
 
-  const ChartSet({this.time, this.maxWeight});
+  const ChartSet({this.date, this.maxWeight});
 }
