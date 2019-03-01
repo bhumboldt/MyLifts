@@ -1,18 +1,36 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:my_lifts/exercise_select_view.dart';
 import 'package:my_lifts/models/exercise.dart';
 import 'package:my_lifts/rep_counter_view.dart';
+import 'package:my_lifts/services/exercise_service.dart';
+import 'package:kiwi/kiwi.dart' as kiwi;
 
 class HomeView extends StatefulWidget {
-  final List<Exercise> exercises;
-
-  const HomeView({this.exercises});
+  const HomeView();
 
   @override
   HomeState createState() => HomeState();
 }
 
 class HomeState extends State<HomeView> {
+  List<Exercise> exercises;
+
+  ExerciseService _exerciseService;
+
+  HomeState() {
+    _exerciseService = kiwi.Container().resolve<ExerciseService>();
+    exercises = <Exercise>[];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _getUserSelectedExercises();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,11 +42,18 @@ class HomeState extends State<HomeView> {
         child: Icon(Icons.add),
         onPressed: () {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => ExerciseSelectView(widget.exercises)),
+            MaterialPageRoute(builder: (context) => ExerciseSelectView(exercises)),
           );
         },
       ),
     );
+  }
+
+  Future<void> _getUserSelectedExercises() async {
+    var userExercises = await _exerciseService.getUsersExercises();
+    setState(() {
+     exercises =userExercises; 
+    });
   }
 
   Widget _buildExerciseList() {
@@ -47,7 +72,7 @@ class HomeState extends State<HomeView> {
         Expanded(
           child: ListView.builder(
             itemBuilder: (BuildContext context, int index) {
-              final exercise = widget.exercises[index];
+              final exercise = exercises[index];
               return ListTile(
                 title: Text(exercise.name),
                 onTap: () {
@@ -57,7 +82,7 @@ class HomeState extends State<HomeView> {
                 },
               );
             },
-            itemCount: widget.exercises.length,
+            itemCount: exercises.length,
           ),
         )
       ],

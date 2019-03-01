@@ -23,12 +23,12 @@ class ExerciseSelectState extends State<ExerciseSelectView> {
   ExerciseService _exerciseService;
 
   List<Exercise> _exercises = <Exercise>[];
-  final Set<Exercise> _selectedExercises =Set<Exercise>();
+  final Set<Exercise> _selectedExercises = Set<Exercise>();
 
   ExerciseSelectState() {
-    _exerciseService =kiwi.Container().resolve<ExerciseService>();
+    _exerciseService = kiwi.Container().resolve<ExerciseService>();
   }
-  
+
   @override
   void initState() {
     super.initState();
@@ -38,7 +38,8 @@ class ExerciseSelectState extends State<ExerciseSelectView> {
     if (widget.selectedExercises.length > 0) {
       for (var selectedExercise in widget.selectedExercises) {
         for (var exercise in _exercises) {
-          if (selectedExercise.id ==exercise.id && !_selectedExercises.contains(exercise)) {
+          if (selectedExercise.id == exercise.id &&
+              !_selectedExercises.contains(exercise)) {
             _selectedExercises.add(exercise);
           }
         }
@@ -49,7 +50,7 @@ class ExerciseSelectState extends State<ExerciseSelectView> {
   Future<void> getExercises() async {
     var exercises = await _exerciseService.getExercises();
     setState(() {
-     _exercises =exercises.toList(); 
+      _exercises = exercises.toList();
     });
     print(exercises.length);
   }
@@ -74,12 +75,11 @@ class ExerciseSelectState extends State<ExerciseSelectView> {
                 style: TextStyle(color: Colors.white),
               ),
               color: Theme.of(context).accentColor,
-              onPressed: () {
+              onPressed: () async {
+                await _saveSelectedExercises();
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
-                    builder: (context) => HomeView(
-                          exercises: _selectedExercises.toList(),
-                        ),
+                    builder: (context) => HomeView(),
                   ),
                   (route) {
                     return false;
@@ -91,6 +91,10 @@ class ExerciseSelectState extends State<ExerciseSelectView> {
         ],
       ),
     );
+  }
+
+  Future<void> _saveSelectedExercises() async {
+    await _exerciseService.createUserExercises(_selectedExercises);
   }
 
   Widget _buildExerciseList() {

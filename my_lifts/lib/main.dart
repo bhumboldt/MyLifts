@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.red,
         accentColor: Colors.redAccent,
       ),
-      home: ExerciseSelectView(),
+      home: ExerciseSelectView()
     );
   }
 }

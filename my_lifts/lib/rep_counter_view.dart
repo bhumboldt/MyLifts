@@ -180,7 +180,7 @@ class RepCounterState extends State<RepCounterView> {
         children: <Widget>[
           const Center(
             child: Text(
-              'Sets',
+              'Sets Done Today',
               style: TextStyle(fontSize: 24.0),
             ),
           ),
