@@ -98,7 +98,8 @@ class HomeState extends State<HomeView> {
         };
       } else if (!exerciseDates[userSet.dateCompleted]
           .containsKey(actExercise.name)) {
-        exerciseDates[userSet.dateCompleted][actExercise.name] = <ExerciseSet>[ userSet ];
+        exerciseDates[userSet.dateCompleted]
+            [actExercise.name] = <ExerciseSet>[userSet];
       } else {
         exerciseDates[userSet.dateCompleted][actExercise.name].add(userSet);
       }
