@@ -15,13 +15,12 @@ class HomeView extends StatefulWidget {
 }
 
 class HomeState extends State<HomeView> {
-  List<Exercise> exercises;
+  Map<String, List<Exercise>> exercisesByGroup = Map<String, List<Exercise>>();
 
   ExerciseService _exerciseService;
 
   HomeState() {
     _exerciseService = kiwi.Container().resolve<ExerciseService>();
-    exercises = <Exercise>[];
   }
 
   @override
@@ -42,7 +41,8 @@ class HomeState extends State<HomeView> {
         child: Icon(Icons.add),
         onPressed: () {
           Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => ExerciseSelectView(exercises)),
+            MaterialPageRoute(
+                builder: (context) => ExerciseSelectView(_flattenExerciseMap())),
           );
         },
       ),
@@ -51,9 +51,29 @@ class HomeState extends State<HomeView> {
 
   Future<void> _getUserSelectedExercises() async {
     var userExercises = await _exerciseService.getUsersExercises();
+    Map<String, List<Exercise>> exerciseGroups = Map<String, List<Exercise>>();
+
+    for (var userExercise in userExercises) {
+      if (!exerciseGroups.containsKey(userExercise.exerciseGroup)) {
+        exerciseGroups[userExercise.exerciseGroup] = <Exercise>[userExercise];
+      } else {
+        exerciseGroups[userExercise.exerciseGroup].add(userExercise);
+      }
+    }
+
     setState(() {
-     exercises =userExercises; 
+      exercisesByGroup = exerciseGroups;
     });
+  }
+
+  List<Exercise> _flattenExerciseMap() {
+    List<Exercise> userExercises = List<Exercise>();
+
+    for (var userExerciseGroup in exercisesByGroup.keys) {
+      userExercises.addAll(exercisesByGroup[userExerciseGroup]);
+    }
+
+    return userExercises;
   }
 
   Widget _buildExerciseList() {
@@ -72,17 +92,23 @@ class HomeState extends State<HomeView> {
         Expanded(
           child: ListView.builder(
             itemBuilder: (BuildContext context, int index) {
-              final exercise = exercises[index];
-              return ListTile(
-                title: Text(exercise.name),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          RepCounterView(exercise: exercise)));
-                },
+              final exerciseGroup = exercisesByGroup.keys.elementAt(index);
+
+              return ExpansionTile(
+                title: Text(exerciseGroup),
+                children: exercisesByGroup[exerciseGroup].map((exercise) {
+                  return ListTile(
+                    title: Text(exercise.name),
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) =>
+                              RepCounterView(exercise: exercise)));
+                    },
+                  );
+                }).toList(),
               );
             },
-            itemCount: exercises.length,
+            itemCount: exercisesByGroup.length,
           ),
         )
       ],

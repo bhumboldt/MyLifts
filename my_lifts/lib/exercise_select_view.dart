@@ -22,7 +22,7 @@ class ExerciseSelectView extends StatefulWidget {
 class ExerciseSelectState extends State<ExerciseSelectView> {
   ExerciseService _exerciseService;
 
-  List<Exercise> _exercises = <Exercise>[];
+  Map<String, List<Exercise>> _exercisesByGroup = Map<String, List<Exercise>>();
   final Set<Exercise> _selectedExercises = Set<Exercise>();
 
   ExerciseSelectState() {
@@ -49,8 +49,18 @@ class ExerciseSelectState extends State<ExerciseSelectView> {
       }
     }
 
+    Map<String, List<Exercise>> exerciseGroups = Map<String, List<Exercise>>();
+
+    for (var exercise in exercises) {
+      if (!exerciseGroups.containsKey(exercise.exerciseGroup)) {
+        exerciseGroups[exercise.exerciseGroup] = <Exercise>[exercise];
+      } else {
+        exerciseGroups[exercise.exerciseGroup].add(exercise);
+      }
+    }
+
     setState(() {
-      _exercises = exercises.toList();
+      _exercisesByGroup = exerciseGroups;
     });
   }
 
@@ -97,28 +107,35 @@ class ExerciseSelectState extends State<ExerciseSelectView> {
   }
 
   Widget _buildExerciseList() {
-    return ListView(
-      children: _exercises.map((exercise) {
-        final isSelected = _selectedExercises.contains(exercise);
-        return ListTile(
-          title: Text(exercise.name),
-          onTap: () {
-            setState(() {
-              if (isSelected) {
-                _selectedExercises.remove(exercise);
-              } else {
-                _selectedExercises.add(exercise);
-              }
-            });
-          },
-          trailing: isSelected
-              ? Icon(
-                  Icons.check,
-                  color: Colors.green,
-                )
-              : Icon(Icons.add),
+    return ListView.builder(
+      itemBuilder: (context, index) {
+        var exerciseGroup = _exercisesByGroup.keys.elementAt(index);
+        return ExpansionTile(
+          title: Text(exerciseGroup),
+          children: _exercisesByGroup[exerciseGroup].map((exercise) {
+            var isSelected = _selectedExercises.contains(exercise);
+            return ListTile(
+              title: Text(exercise.name),
+              onTap: () {
+                setState(() {
+                  if (isSelected) {
+                    _selectedExercises.remove(exercise);
+                  } else {
+                    _selectedExercises.add(exercise);
+                  }
+                });
+              },
+              trailing: isSelected
+                  ? Icon(
+                      Icons.check,
+                      color: Colors.green,
+                    )
+                  : Icon(Icons.add),
+            );
+          }).toList(),
         );
-      }).toList(),
+      },
+      itemCount: _exercisesByGroup.length,
     );
   }
 }
