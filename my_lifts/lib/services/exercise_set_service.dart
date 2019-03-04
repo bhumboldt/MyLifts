@@ -23,6 +23,13 @@ class ExerciseSetService {
     });
   }
 
+  Future<List<ExerciseSet>> getAllExerciseSets() async {
+    var allExerciseSets = await _localDatabaseService.getAllItems('exerciseset');
+    return List.generate(allExerciseSets.length, (index) {
+      return ExerciseSet.fromMap(allExerciseSets[index]);
+    });
+  }
+
   Future<int> createExerciseSet(ExerciseSet exerciseSet) {
     return _localDatabaseService.insertItem('exerciseset', exerciseSet.toMap());
   }
