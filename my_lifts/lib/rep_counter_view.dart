@@ -25,6 +25,7 @@ class RepCounterState extends State<RepCounterView> {
   
   List<ExerciseSet> _sets = List<ExerciseSet>();
   List<ChartSet> _chartData = List<ChartSet>();
+  Map<String, List<ExerciseSet>> _allSets = Map<String, List<ExerciseSet>>();
 
   ExerciseSetService _exerciseSetService;
 
@@ -43,7 +44,7 @@ class RepCounterState extends State<RepCounterView> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.exercise.name),
@@ -57,6 +58,10 @@ class RepCounterState extends State<RepCounterView> {
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: Text('Chart'),
               ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text('History'),
+              )
             ],
           ),
         ),
@@ -72,7 +77,8 @@ class RepCounterState extends State<RepCounterView> {
                 ],
               ),
             ),
-            _buildChart()
+            _buildChart(),
+            _buildHistoryList(),
           ],
         ),
       ),
@@ -90,12 +96,19 @@ class RepCounterState extends State<RepCounterView> {
     var allCompletedSets =await _exerciseSetService.getExerciseSetsForExerciseId(widget.exercise.id);
     Map<String, int> weightMap = Map<String, int>();
     List<ChartSet> chartData = List<ChartSet>();
+    Map<String, List<ExerciseSet>> exercisesByDate = Map<String, List<ExerciseSet>>();
 
     for (var completedSet in allCompletedSets) {
       if (!weightMap.containsKey(completedSet.dateCompleted)) {
         weightMap[completedSet.dateCompleted] =completedSet.weight;
       } else if (weightMap[completedSet.dateCompleted] < completedSet.weight) {
         weightMap[completedSet.dateCompleted] =completedSet.weight;
+      }
+
+      if (!exercisesByDate.containsKey(completedSet.dateCompleted)) {
+        exercisesByDate[completedSet.dateCompleted] = <ExerciseSet>[ completedSet ];
+      } else {
+        exercisesByDate[completedSet.dateCompleted].add(completedSet);
       }
     }
 
@@ -105,6 +118,7 @@ class RepCounterState extends State<RepCounterView> {
 
     setState(() {
      _chartData =chartData;
+     _allSets =exercisesByDate;
     });
   }
 
@@ -113,13 +127,30 @@ class RepCounterState extends State<RepCounterView> {
       width: 250,
       height: 250,
       child: Padding(
-        padding: const EdgeInsets.all(4.0),
+        padding: const EdgeInsets.all(16.0),
         child: charts.TimeSeriesChart(
           _createData(),
           animate: true,
           defaultInteractions: true,
         ),
       ),
+    );
+  }
+
+  Widget _buildHistoryList() {
+    return ListView.builder(
+      itemBuilder: (context, index) {
+        var date =_allSets.keys.elementAt(index);
+        return ExpansionTile(
+          title: Text(date),
+          children: _allSets[date].map((exerciseSet) {
+            return ListTile(
+              title: Text('${exerciseSet.reps} reps @ ${exerciseSet.weight} lbs.'),
+            );
+          }).toList(),
+        );
+      },
+      itemCount: _allSets.keys.length,
     );
   }
 
