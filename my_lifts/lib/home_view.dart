@@ -92,6 +92,9 @@ class HomeState extends State<HomeView> {
       var actExercise = userExercises.firstWhere((exercise) {
         return exercise.id == userSet.exerciseId;
       });
+      if (actExercise == null) {
+        continue;
+      }
       if (!exerciseDates.containsKey(userSet.dateCompleted)) {
         exerciseDates[userSet.dateCompleted] = <String, List<ExerciseSet>>{
           actExercise.name: <ExerciseSet>[userSet]
