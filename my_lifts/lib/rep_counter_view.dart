@@ -72,7 +72,6 @@ class RepCounterState extends State<RepCounterView> {
               child: Column(
                 children: [
                   _buildRepWeightForm(),
-                  _buildAddSetButton(),
                   _buildSetList()
                 ],
               ),
@@ -124,8 +123,6 @@ class RepCounterState extends State<RepCounterView> {
 
   Widget _buildChart() {
     return Container(
-      width: 250,
-      height: 250,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: charts.TimeSeriesChart(
@@ -167,13 +164,10 @@ class RepCounterState extends State<RepCounterView> {
 
   Widget _buildAddSetButton() {
     return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: RaisedButton(
+      padding: const EdgeInsets.only(top: 12.0, right: 8.0),
+      child: IconButton(
         color: Theme.of(context).accentColor,
-        child: Text(
-          'ADD SET',
-          style: TextStyle(color: Colors.white),
-        ),
+        icon: Icon(Icons.add),
         onPressed: () => _submitSet(),
       ),
     );
@@ -213,11 +207,10 @@ class RepCounterState extends State<RepCounterView> {
       children: <Widget>[
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
+            padding: const EdgeInsets.only(left: 8.0, top: 12.0),
             child: TextField(
               controller: _repsTextController,
-              decoration: InputDecoration(hintText: 'Reps'),
-              maxLength: 3,
+              decoration: InputDecoration(labelText: 'Reps', border: OutlineInputBorder()),
               keyboardType: TextInputType.number,
               focusNode: _repsFocusNode,
               textInputAction: TextInputAction.next,
@@ -230,15 +223,13 @@ class RepCounterState extends State<RepCounterView> {
         ),
         const Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Text('@'),
         ),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: const EdgeInsets.only(right: 8.0, top: 12.0),
             child: TextField(
               controller: _weightTextController,
-              decoration: InputDecoration(hintText: 'Weight'),
-              maxLength: 4,
+              decoration: InputDecoration(labelText: 'Weight', border: OutlineInputBorder()),
               keyboardType: TextInputType.number,
               focusNode: _weightFocusNode,
               onSubmitted: (text) {
@@ -247,13 +238,14 @@ class RepCounterState extends State<RepCounterView> {
             ),
           ),
         ),
+        _buildAddSetButton()
       ],
     );
   }
 
   Widget _buildSetList() {
     return Padding(
-      padding: const EdgeInsets.only(top: 16.0),
+      padding: const EdgeInsets.only(top: 24.0),
       child: Column(
         children: <Widget>[
           const Center(

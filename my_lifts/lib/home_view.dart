@@ -47,7 +47,7 @@ class HomeState extends State<HomeView> {
             tabs: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
-                child: Text('My Exercises'),
+                child: Text('My Exercises',),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -130,14 +130,17 @@ class HomeState extends State<HomeView> {
           title: Text(date),
           children: exercisesByDate[date].keys.map((exerciseName) {
             var exerciseSets = exercisesByDate[date][exerciseName];
-            return ExpansionTile(
-              title: Text(exerciseName),
-              children: exerciseSets.map((exerciseSet) {
-                return ListTile(
-                  title: Text(
-                      '${exerciseSet.reps} reps @ ${exerciseSet.weight} lbs.'),
-                );
-              }).toList(),
+            return Padding(
+              padding: const EdgeInsets.only(left: 4.0),
+              child: ExpansionTile(
+                title: Text(exerciseName),
+                children: exerciseSets.map((exerciseSet) {
+                  return ListTile(
+                    title: Text(
+                        '${exerciseSet.reps} reps @ ${exerciseSet.weight} lbs.'),
+                  );
+                }).toList(),
+              ),
             );
           }).toList(),
         );
